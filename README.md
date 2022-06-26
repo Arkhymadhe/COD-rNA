@@ -5,10 +5,10 @@ ___
 This project was carried out with the aim to predict the state of sensorless machines based on information as regards their present state of operation.
 
 ### Stack
+All stack elements are open-sourced:
 [![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)](https://www.python.org/downloads/release/python-360/)
 [![Jupyter Notebook](https://img.shields.io/badge/jupyter-%23FA0F00.svg?style=for-the-badge&logo=jupyter&logoColor=white)](https://www.jupyter.org)
 [![PyCharm](https://img.shields.io/badge/pycharm-143?style=for-the-badge&logo=pycharm&logoColor=black&color=black&labelColor=green)](https://www.jetbrains.com/pycharm/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)](https://pytorch.org/)
 [![Scikit-Learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 [![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)](http://git-scm.com/)
 [![saythanks](https://img.shields.io/badge/say-thanks-ff69b4.svg?&style=for-the-badge)](https://saythanks.io/to/kennethreitz)
@@ -62,21 +62,27 @@ Others may be found in the `main.py` script.
 4. Find trained model artefact in the `artefacts` directory.
 
 ### Training Procedure
-Training was done via composite models, i.e. estimators and transformers chained via a Pipeline API in Scikit Learn.
+Training was done via composite models, i.e. estimators and transformers chained via a Pipeline API in Scikit Learn. The dataset was plagued by class imbalance, and an oversampling technique was applied during modelling.
 
 The Pipeline steps are:
 - MinMax scaler
 - Quantile transformer
-- Oversampler
+- SMOTE Oversampler
+- Learning algorithm
+
+Two learning algorithms were attempted:
+- Logistic Regression
+- Support Vector Machines (SVMs)
 
 
 ### Performance Report
-Feature selection techniques were applied. This saw a considerable performance improvement from `~ 89 %` for a `LogisticRegression` model to `~ 94 %` for an `SVM`. These performance metrics were obtained for the major classification metrics (accuracy, f1-score, recall, precision, and AUC score), via `macro` averaging.
+A considerable test performance improvement was observed, from `~ 89 %` for a `LogisticRegression` Pipeline to `~ 95 %` for an `SVM`. These performance metrics were obtained for the major classification metrics (accuracy, f1-score, recall, precision, and AUC score), via `macro` averaging.
 
 
 
 ### To-Dos
-
+1. Flesh out this README.
+2. Tighten up the `main.py` file.
 
 ### Appendix
 
