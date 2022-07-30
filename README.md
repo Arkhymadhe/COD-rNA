@@ -79,7 +79,7 @@ The SVM was the final algorithm selected.
 ### Performance Report
 A considerable test performance improvement was observed, from `~ 89 %` for a `LogisticRegression` Pipeline to `~ 94 %` for an `SVM` on the test set. These performance metrics were obtained for the major classification metrics (accuracy, f1-score, recall, precision, and AUC score), via `macro` averaging.
 
-Thresholding was carried out for the trained model, and the maximal performance on the `roc-auc` metric (`94.42050894431847 %`) at a threshold of `0.49400000000000005`.
+Thresholding was carried out for the trained model, and the maximal test performance on the `roc-auc` metric (`94.42050894431847 %`) was obtained at a threshold of `0.49400000000000005`.
 
 ### To-Dos
 1. Flesh out this README.
