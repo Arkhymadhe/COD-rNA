@@ -1,20 +1,43 @@
+### Global imports
 import os
 import pandas as pd
+import numpy as np
 
-import zlib
 import zipfile
 
-from sklearn.dataset import load_svmlight_file
+from sklearn.datasets import load_svmlight_file
 from sklearn.model_selection import train_test_split
 
 
 def load_dataset(path):
-    ''' Load svmlight dataset from path. '''
+    """ Load svmlight dataset from path. """
     
     feature_file, target_file = load_svmlight_file(path)
     
-    return pd.DataFrame(file.todense()), target_file
+    return pd.DataFrame(feature_file.todense()), target_file
 
+
+def data_compression(fnames, zip_path):
+    """ Combine files into one compressed file. """
+    compression_type = zipfile.ZIP_DEFLATED
+
+    with zipfile.ZipFile(zip_path, 'w') as zf:
+        for fname in fnames:
+            zf.write(fname, fname.split("\\")[-1], compression_type)
+            os.remove(os.path.join(fname))
+
+    return None
+
+
+def data_decompression(path, zip_path):
+    """
+    Extract compressed files to path.
+    """
+
+    with zipfile.ZipFile(zip_path, 'r') as zf:
+        zf.extractall(path)
+
+    return None
 
 def manual_describe(data, path, save = False):
     ''' Return a DataFrame containing a description of missing values, unique values, and data types. '''

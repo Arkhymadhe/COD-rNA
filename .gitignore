@@ -1,3 +1,6 @@
 *.csv
-data/*
+data/dataset/
 */.ipynb_checkpoints/
+/.idea
+*/__pycache__/
+notebooks/*.bin

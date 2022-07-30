@@ -10,6 +10,7 @@ import random
 import numpy as np
 from copy import deepcopy
 
+from data_ops import data_compression, data_decompression
 from data_ops import load_dataset
 from data_ops import manual_describe
 from data_ops import split_data
@@ -65,8 +66,6 @@ def configure_args():
                       help='Output distribution for quantile transformer')
     
     args.add_argument('--probs', default=True, type=bool, help='Allow for probability estimation via SVC?')
-    
-    args.add_argument('--save', default=True, type=bool, help='Save trained model')
 
     args.add_argument('--matrix', default=True, type=bool, choices=[True, False],
                       help= 'Show confusion matrix?')
@@ -106,26 +105,41 @@ def main():
     print('>>> Parsing CLI arguments...')
     start_time = time.time()
     args = configure_args().parse_args()
-    print(f'>>> CLI arguments parsed! Time elapsed : {time.time() - start_time:.5f} secs.')
+    print(f'>>> CLI arguments parsed! Time elapsed : {time.time() - start_time:.5f} secs ({(time.time() - start_time)/60:.5f} mins).')
     print()
 
     ### Dataset
-    print('>>> Importing dataset...')
+    print('>>> Decompressing (and moving) dataset...')
     start_time = time.time()
 
     if not os.path.exists(args.arch_dir.replace('rna_dataset.zip', '')):
         os.makedirs(args.arch_dir.replace('rna_dataset.zip', ''))
 
-    X_train, y_train = load_dataset(path_to_data = os.path.join(args.data_dir, 'cod_rna'))
-    X_test, y_test = load_dataset(path_to_data = os.path.join(args.data_dir, 'cod_rna.t'))
+    data_decompression(path = args.data_dir, zip_path = args.arch_dir)
 
-    print(f'>>> Dataset successfully imported! Time elapsed : {time.time() - start_time:.5f} secs.',
+    print(f'>>> Dataset moved! Time elapsed : {time.time() - start_time:.5f} secs ({(time.time() - start_time)/60:.5f} mins).')
+
+    print('>>> Importing dataset...')
+    start_time = time.time()
+
+    X_train, y_train = load_dataset(path = os.path.join(args.data_dir, 'cod-rna.t'))
+    X_test, y_test = load_dataset(path = os.path.join(args.data_dir, 'cod-rna.txt'))
+
+    print(f'>>> Dataset successfully imported! Time elapsed : {time.time() - start_time:.5f} secs ({(time.time() - start_time)/60:.5f} mins).',
           f'\n\t> Number of data observations (Train): [{X_train.shape[0]}]',
           f'\n\t> Feature dimensions (Train): [{X_train.shape[1]}]')
     print()
     
-    print(f'\n\t> Number of data observations (Test): [{X_test.shape[0]}]',
+    print(f'\t> Number of data observations (Test): [{X_test.shape[0]}]',
           f'\n\t> Feature dimensions (Test): [{X_test.shape[1]}]')
+    print()
+
+    print('>>> Compressing datasets...')
+    start_time = time.time()
+    data_compression(fnames = [os.path.join(args.data_dir, 'cod-rna.txt'),
+                               os.path.join(args.data_dir, 'cod-rna.t')],
+                     zip_path = args.arch_dir)
+    print(f'>>> Datasets compressed! Time elapsed : {time.time() - start_time:.5f} secs ({(time.time() - start_time)/60:.5f} mins).')
     print()
 
     ### Reproducibility
@@ -139,9 +153,9 @@ def main():
     np.random.default_rng(args.r_state)
 
     print('\t> Random seeds set!')
-    print(f'>>> Reproducibility ensured! Time elapsed : {time.time() - start_time:.5f} secs.')
+    print(f'>>> Reproducibility ensured! Time elapsed : {time.time() - start_time:.5f} secs ({(time.time() - start_time)/60:.5f} mins).')
     print()
-    
+
     if not os.path.exists(args.report_dir):
         os.makedirs(os.path.join(args.report_dir, 'images', '1'))
         os.makedirs(os.path.join(args.report_dir, 'images', '2'))
@@ -150,7 +164,7 @@ def main():
         os.makedirs(os.path.join(args.report_dir, 'text'))
     else:
         pass
-    
+
     if args.visualize:
         print(f'>>> Visualizing dataset...')
         univariate_plot(X_train, path = os.path.join(args.report_dir, 'images', '1', 'dist_plot'),
@@ -158,13 +172,13 @@ def main():
 
         correlogram(X_train, path = os.path.join(args.report_dir, 'images', '2', 'pair_plot'),
                     save = args.save)
-        
+
         get_correlation_map(X_train, path = os.path.join(args.report_dir, 'images', '2', 'Feature correlation'),
                             save = args.save)
-        
+
         class_distribution(y_train, path = os.path.join(args.report_dir, 'images', '2', 'Target distribution'))
-    print()
-    
+        print()
+
     print('>>> Describing dataset...')
     print(manual_describe(X_train, path = os.path.join(args.report_dir, 'text'), save = args.save))
     print()
@@ -177,7 +191,7 @@ def main():
 
         X_valid, X_test, y_valid, y_test = split_data(X_test, y_test, split_size=args.t)
 
-        print(f'>>> Data splits created! Time elapsed : {time.time() - start_time:.5f} secs.')
+        print(f'>>> Data splits created! Time elapsed : {time.time() - start_time:.5f} secs ({(time.time() - start_time)/60:.5f} mins).')
         print(f'\t> Number of Validation observations: [{X_valid.shape[0]}]',
               f'\n\t> Number of Test observations: [{X_test.shape[0]}]')
         print()
@@ -185,16 +199,15 @@ def main():
     ### Model fitting
     print('>>> Importing model; Training model...')
     start_time = time.time()
-    
-    model = import_model(C_param=args.C, probability = args.probs,
-                         n_jobs=args.n_jobs, random_state = args.r_state)
-    
+
+    model = import_model(C_param=args.C, probability = args.probs, random_state = args.r_state)
+
     model = create_pipeline(model = model, n_components = args.n_components,
                             whiten = args.whiten, dist_type = args.dist_type)
-    
+
     model = train_model(model, X_train, y_train)
-    
-    print(f'>>> Model trained successfully! Time elapsed : {time.time() - start_time:.5f} secs.')
+
+    print(f'>>> Model trained successfully! Time elapsed : {time.time() - start_time:.5f} secs ({(time.time() - start_time)/60:.5f} mins).')
     print()
 
     if args.save:
@@ -214,7 +227,7 @@ def main():
         print('\t> Model artefact saved!')
         print()
 
-        print(f'>>> Artefact redundancy achieved! Time elapsed : {time.time() - start_time:.5f} secs.')
+        print(f'>>> Artefact redundancy achieved! Time elapsed : {time.time() - start_time:.5f} secs ({(time.time() - start_time)/60:.5f} mins).')
         print()
 
     if args.matrix:
@@ -263,7 +276,7 @@ def main():
         print(get_f1_score(y_test, test_preds, num_places=args.dp, text=args.text))
         print()
 
-    print(f'>>> Program run successfully! Total Time elapsed : {time.time() - origin_time :.5f} secs.')
+    print(f'>>> Program run successfully! Total Time elapsed : {time.time() - origin_time :.5f} secs ({(time.time() - origin_time)/60:.5f} mins).')
 
 
 if __name__ == '__main__':

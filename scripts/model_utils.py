@@ -9,11 +9,10 @@ from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline
 
 
-def import_model(C_param = 1.0, probability = True,
-                 n_jobs = -1, random_state = 42):
+def import_model(C_param = 1.0, probability = True, random_state = 42):
     ''' Return model object. '''
     
-    return SVC(probability = probs, C = C_param, n_jobs = n_jobs, random_state = random_state)
+    return SVC(probability = probability, C = C_param, random_state = random_state)
 
 
 def create_pipeline(model, n_components = 7, dist_type = 'normal', whiten = True):

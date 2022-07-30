@@ -2,10 +2,11 @@
 ### COD-rNA Prediction
 ___
 ### Overview
-This project was carried out with the aim to predict the state of sensorless machines based on information as regards their present state of operation.
+This project was carried out with the aim to prediction/detection of novel non-coding RNA (ncRNA) protein strands in sequenced genomes. For more information, see the published paper by the authors.
 
 ### Stack
 All stack elements are open-sourced:
+
 [![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)](https://www.python.org/downloads/release/python-360/)
 [![Jupyter Notebook](https://img.shields.io/badge/jupyter-%23FA0F00.svg?style=for-the-badge&logo=jupyter&logoColor=white)](https://www.jupyter.org)
 [![PyCharm](https://img.shields.io/badge/pycharm-143?style=for-the-badge&logo=pycharm&logoColor=black&color=black&labelColor=green)](https://www.jetbrains.com/pycharm/)
@@ -15,7 +16,7 @@ All stack elements are open-sourced:
 
 ### Features and Data Information
 There are eight (8) features contained in the data, and they are as follows:
-- Divide by 10 to get deltaG_total value computed by the Dynalign algorithm
+- Divide by 10 to get `deltaG_total` value computed by the Dynalign algorithm
 - The length of shorter sequence
 - 'A' frequencies of sequence 1
 - 'U' frequencies of sequence 1
@@ -43,10 +44,9 @@ To run the scripts, type as below in the Terminal:
 Example:
 
 ```
-./scripts/ $ py main.py --n_jobs -1
+./scripts/ $ py main.py --r_state 42
 ```
 Acceptable arguments include:
-- n_jobs (default = -1)
 - visualize (default = False)
 - r_state (default = 42; random state)
 - data_dir (data directory)
@@ -74,11 +74,12 @@ Two learning algorithms were attempted:
 - Logistic Regression
 - Support Vector Machines (SVMs)
 
+The SVM was the final algorithm selected.
 
 ### Performance Report
-A considerable test performance improvement was observed, from `~ 89 %` for a `LogisticRegression` Pipeline to `~ 95 %` for an `SVM`. These performance metrics were obtained for the major classification metrics (accuracy, f1-score, recall, precision, and AUC score), via `macro` averaging.
+A considerable test performance improvement was observed, from `~ 89 %` for a `LogisticRegression` Pipeline to `~ 94 %` for an `SVM` on the test set. These performance metrics were obtained for the major classification metrics (accuracy, f1-score, recall, precision, and AUC score), via `macro` averaging.
 
-
+Thresholding was carried out for the trained model, and the maximal performance on the `roc-auc` metric (`94.42050894431847 %`) at a threshold of `0.49400000000000005`.
 
 ### To-Dos
 1. Flesh out this README.
@@ -88,10 +89,10 @@ A considerable test performance improvement was observed, from `~ 89 %` for a `L
 
 Data Source:
 
-Source: [Train](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/cod-rna) [Test](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/cod-rna.t)
+Source: [ [Train](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/cod-rna) ] || [ [Test](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/cod-rna.t) ]
 
 ### Authors and Citation
 
-1. Andrew V Uzilov, Joshua M Keegan, and David H Mathews. Detection of non-coding RNAs on the basis of predicted secondary structure formation free energy change. BMC Bioinformatics, 7(173), 2006.
+1. Andrew V Uzilov, Joshua M Keegan, and David H Mathews. Detection of non-coding RNAs on the basis of predicted secondary structure formation free energy change. BMC Bioinformatics, 7(173), 2006. [ [Link](https://pubmed.ncbi.nlm.nih.gov/16566836/) ]
 
 

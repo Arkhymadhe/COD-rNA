@@ -49,7 +49,7 @@ def correlogram(data, path, hue = None, h = 10, w = 10, save = True):
     return None
 
           
-def get_correlation_map(data, path, h = 20, w = 10):
+def get_correlation_map(data, path, save = False, h = 20, w = 10):
     ''' Visualize feature correlation. '''
     
     plt.figure(figsize = (h, w))
